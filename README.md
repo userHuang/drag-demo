@@ -1,6 +1,6 @@
 # drag-demo
 
-> A Vue.js project
+> 拖拽demo
 
 ## Build Setup
 
@@ -19,3 +19,5 @@ npm run build --report
 ```
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+
+# ![image](https://github.com/userHuang/drag-demo/blob/master/static/images/tip.gif)

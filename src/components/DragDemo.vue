@@ -1,16 +1,16 @@
 <template>
   <div class="drag-page container">
-    <ul @mousedown="mousedown" id="qqq">
+    <ul @mousedown="mousedown" id="A">
       <li :id="item.value" class="drag-el" v-for="(item, index) in dataList_0" :key="index">{{item.value}}</li>
-      <li :style="dragStyle" v-if="parentNodeId == 'qqq'">{{value}}</li>
+      <li :style="dragStyle" v-if="parentNodeId == 'A'">{{value}}</li>
     </ul>
-    <ul id="www" @mousedown="mousedown">
+    <ul id="B" @mousedown="mousedown">
       <li :id="item.value" class="drag-el" v-for="(item, index) in dataList_1" :key="index">{{item.value}}</li>
-      <li :style="dragStyle" v-if="parentNodeId == 'www'">{{value}}</li>
+      <li :style="dragStyle" v-if="parentNodeId == 'B'">{{value}}</li>
     </ul>
-    <ul id="zzz" @mousedown="mousedown">
+    <ul id="C" @mousedown="mousedown">
       <li :id="item.value" class="drag-el" v-for="(item, index) in dataList_2" :key="index">{{item.value}}</li>
-      <li :style="dragStyle" v-if="parentNodeId == 'zzz'">{{value}}</li>
+      <li :style="dragStyle" v-if="parentNodeId == 'C'">{{value}}</li>
     </ul>
   </div>
 </template>
@@ -66,7 +66,7 @@ export default {
   },
   methods: {
     mousedown (event) {
-      console.log(event, '===mousedown=====')
+      console.log('===mousedown=====')
       if (event.target.className === 'drag-el') {
         const value = event.target.innerText
         // const targetId = event.target.id
@@ -88,9 +88,11 @@ export default {
           if (!this.permitDrag) {
             return
           }
+          // 偏移距离
           var x = e.clientX - (event.clientX - event.target.offsetLeft)
           var y = e.clientY - (event.clientY - event.target.offsetTop)
           this.dragStyle = {...this.dragStyle, left: x + 'px', top: y + 'px'}
+          // 鼠标坐标
           const targetX = e.x
           const targetY = e.y
           document.querySelectorAll('.container ul').forEach((item, index) => {
@@ -118,14 +120,12 @@ export default {
             'display': 'none'
           }
           let selectIndex
+          // 当前鼠标的坐标
           const targetX = e.x
           const targetY = e.y
           // console.log(targetX, targetY, 'targetX, targetY')
           document.querySelectorAll('.container ul').forEach((item, index) => {
-            // console.log(item.offsetLeft, '====offsetLeft===')
-            // console.log(item.offsetTop, '====offsetTop===')
-            // console.log(item.offsetWidth, '====offsetWidth===')
-            // console.log(item.offsetHeight, '====offsetHeight===')
+            // 每个ul的占位坐标
             const offsetTop = item.offsetTop
             const offsetLeft = item.offsetLeft
             const offsetX = offsetLeft + item.offsetWidth
@@ -140,19 +140,19 @@ export default {
           if (selectIndex === undefined) {
             return
           }
-          if (parentNodeId === 'qqq' && selectIndex !== 0) {
+          if (parentNodeId === 'A' && selectIndex !== 0) {
             this[`dataList_${selectIndex}`].push({
               value
             })
             this[`dataList_0`] = this[`dataList_0`].filter(item => item.value !== value)
           }
-          if (parentNodeId === 'www' && selectIndex !== 1) {
+          if (parentNodeId === 'B' && selectIndex !== 1) {
             this[`dataList_${selectIndex}`].push({
               value
             })
             this[`dataList_1`] = this[`dataList_1`].filter(item => item.value !== value)
           }
-          if (parentNodeId === 'zzz' && selectIndex !== 2) {
+          if (parentNodeId === 'C' && selectIndex !== 2) {
             this[`dataList_${selectIndex}`].push({
               value
             })
