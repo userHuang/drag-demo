@@ -1,16 +1,8 @@
 <template>
   <div class="drag-page container">
-    <ul @mousedown="mousedown" id="A">
-      <li :id="item.value" class="drag-el" v-for="(item, index) in dataList_0" :key="index">{{item.value}}</li>
-      <li :style="dragStyle" v-if="parentNodeId == 'A'">{{value}}</li>
-    </ul>
-    <ul id="B" @mousedown="mousedown">
-      <li :id="item.value" class="drag-el" v-for="(item, index) in dataList_1" :key="index">{{item.value}}</li>
-      <li :style="dragStyle" v-if="parentNodeId == 'B'">{{value}}</li>
-    </ul>
-    <ul id="C" @mousedown="mousedown">
-      <li :id="item.value" class="drag-el" v-for="(item, index) in dataList_2" :key="index">{{item.value}}</li>
-      <li :style="dragStyle" v-if="parentNodeId == 'C'">{{value}}</li>
+    <ul @mousedown="mousedown" :id="drag.id" v-for="drag in dragList" :key='drag.id'>
+      <li :id="item.value" class="drag-el" v-for="(item, index) in drag.dataList" :key="index">{{item.value}}</li>
+      <li :style="dragStyle" v-if="parentNodeId == drag.id">{{value}}</li>
     </ul>
   </div>
 </template>
@@ -19,12 +11,13 @@
   .drag-page{
     margin-left: 230px;
     ul{
-      width: 400px;
-      height: 400px;
+      width: 300px;
+      height: 300px;
       background: #FFFFF0;
       border: 1px solid #CCC;
       display: inline-block;
-      margin-right: 20px;
+      margin-right: 120px;
+      margin-top: 20px;
       vertical-align: top;
       position relative;
 
@@ -48,28 +41,42 @@ export default {
   data () {
     return {
       permitDrag: false, // 是否允许移动标识
-      dataList_0: [{
-        value: 'A'
+
+      dragList: [{
+        id: 'A',
+        dataList: [{
+          value: '1'
+        }, {
+          value: '2'
+        }, {
+          value: '3'
+        }]
       }, {
-        value: 'B'
+        id: 'B',
+        dataList: []
       }, {
-        value: 'C'
+        id: 'C',
+        dataList: []
+      }, {
+        id: 'D',
+        dataList: []
+      }, {
+        id: 'E',
+        dataList: []
+      }, {
+        id: 'F',
+        dataList: []
       }],
 
       dragStyle: {},
-      dataList_1: [],
-      dataList_2: [],
-
       parentNodeId: '',
       value: ''
     }
   },
   methods: {
     mousedown (event) {
-      console.log('===mousedown=====')
       if (event.target.className === 'drag-el') {
         const value = event.target.innerText
-        // const targetId = event.target.id
         const parentNodeId = event.target.parentNode.id
         this.parentNodeId = parentNodeId
         this.value = value
@@ -109,7 +116,6 @@ export default {
         }
 
         document.onmouseup = e => {
-          console.log('=========onmouseup============')
           if (!this.permitDrag) {
             return
           }
@@ -140,23 +146,31 @@ export default {
           if (selectIndex === undefined) {
             return
           }
-          if (parentNodeId === 'A' && selectIndex !== 0) {
-            this[`dataList_${selectIndex}`].push({
+
+          const dataFix = (index, i) => {
+            this.dragList[index].dataList.push({
               value
             })
-            this[`dataList_0`] = this[`dataList_0`].filter(item => item.value !== value)
+            this.dragList[i].dataList = this.dragList[i].dataList.filter(item => item.value !== value)
+          }
+
+          if (parentNodeId === 'A' && selectIndex !== 0) {
+            dataFix(selectIndex, 0)
           }
           if (parentNodeId === 'B' && selectIndex !== 1) {
-            this[`dataList_${selectIndex}`].push({
-              value
-            })
-            this[`dataList_1`] = this[`dataList_1`].filter(item => item.value !== value)
+            dataFix(selectIndex, 1)
           }
           if (parentNodeId === 'C' && selectIndex !== 2) {
-            this[`dataList_${selectIndex}`].push({
-              value
-            })
-            this[`dataList_2`] = this[`dataList_2`].filter(item => item.value !== value)
+            dataFix(selectIndex, 2)
+          }
+          if (parentNodeId === 'D' && selectIndex !== 3) {
+            dataFix(selectIndex, 3)
+          }
+          if (parentNodeId === 'E' && selectIndex !== 4) {
+            dataFix(selectIndex, 4)
+          }
+          if (parentNodeId === 'F' && selectIndex !== 5) {
+            dataFix(selectIndex, 5)
           }
         }
       }
