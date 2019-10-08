@@ -1,9 +1,13 @@
 <template>
   <div class="drag-page container">
-    <ul @mousedown="mousedown" :id="drag.id" v-for="drag in dragList" :key='drag.id'>
-      <li :id="item.value" class="drag-el" v-for="(item, index) in drag.dataList" :key="index">{{item.value}}</li>
+    <transition-group>
+    <ul @mousedown="mousedown(drag, index, $event)" :id="drag.id" v-for="(drag, index) in dragList" :key='drag.id'>
+      <transition-group>
+        <li :id="`li_${item.value}`" class="drag-el" :curli="i" v-for="(item, i) in drag.dataList" :key="`${drag.id}_${item.value}`">{{item.value}}</li>
+      </transition-group>
       <li :style="dragStyle" v-if="parentNodeId == drag.id">{{value}}</li>
     </ul>
+    </transition-group>
   </div>
 </template>
 
@@ -32,10 +36,33 @@
         line-height: 30px;
       }
     }
+
+    .v-enter-active {
+      animation: bounce-in .5s;
+    }
+    @keyframes bounce-in {
+      0% {
+        transform: scale(0);
+      }
+      50% {
+        transform: scale(1.2);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
   }
 </style>
 
 <script type="text/ecmascript-6">
+const id2index = {
+  'A': 0,
+  'B': 1,
+  'C': 2,
+  'D': 3,
+  'E': 4,
+  'F': 5
+}
 export default {
   name: 'Drag',
   data () {
@@ -50,21 +77,16 @@ export default {
           value: '2'
         }, {
           value: '3'
+        }, {
+          value: '4'
+        }, {
+          value: '5'
         }]
       }, {
         id: 'B',
         dataList: []
       }, {
         id: 'C',
-        dataList: []
-      }, {
-        id: 'D',
-        dataList: []
-      }, {
-        id: 'E',
-        dataList: []
-      }, {
-        id: 'F',
         dataList: []
       }],
 
@@ -74,10 +96,12 @@ export default {
     }
   },
   methods: {
-    mousedown (event) {
+    mousedown (drag, curUl, event) {
       if (event.target.className === 'drag-el') {
         const value = event.target.innerText
-        const parentNodeId = event.target.parentNode.id
+        const parentNodeId = drag.id
+        const curLiIndex = event.target.attributes.curli.value
+        const curULIndex = curUl
         this.parentNodeId = parentNodeId
         this.value = value
         this.permitDrag = true
@@ -147,30 +171,59 @@ export default {
             return
           }
 
-          const dataFix = (index, i) => {
-            this.dragList[index].dataList.push({
+          const otherULdataFix = (index, i) => {
+            // 移到的UL的id
+            const ele = this.dragList[selectIndex].id
+            let replaceIndex = -1
+            const pNode = document.querySelectorAll(`#${ele}`)[0]
+            document.querySelectorAll(`#${ele} span li`).forEach((item, index) => {
+            // 当前li的占位坐标
+              const offsetY = item.offsetTop + pNode.offsetTop
+              if (targetY > offsetY) {
+                replaceIndex = index
+              }
+              if (targetY < 110) {
+                replaceIndex = -1
+              }
+            })
+            this.dragList[index].dataList.splice(replaceIndex + 1, 0, {
               value
             })
             this.dragList[i].dataList = this.dragList[i].dataList.filter(item => item.value !== value)
           }
 
-          if (parentNodeId === 'A' && selectIndex !== 0) {
-            dataFix(selectIndex, 0)
+          const sameUlDataFix = (ele) => {
+            let replaceIndex = 0
+            const pNode = document.querySelectorAll(`#${ele}`)[0]
+            document.querySelectorAll(`#${ele} span li`).forEach((item, index) => {
+            // 当前li的占位坐标
+              const offsetY = item.offsetTop + pNode.offsetTop
+              if (targetY > offsetY) {
+                replaceIndex = index
+              }
+            })
+            let dataList = this.dragList[curULIndex].dataList
+            if (dataList.length > 1 && curLiIndex !== replaceIndex) {
+              const curLiArr = dataList[curLiIndex]
+              const replaceArr = dataList[replaceIndex]
+              dataList = dataList.map((item, i) => {
+                if (` ${i} ` !== ` ${curLiIndex} ` && ` ${i} ` !== ` ${replaceIndex} `) {
+                  return item
+                }
+              })
+              dataList[curLiIndex] = replaceArr
+              dataList[replaceIndex] = curLiArr
+              this.dragList[curULIndex].dataList = [...dataList]
+              document.querySelectorAll(`#li_${value}`)[0].classList.add('v-enter-active')
+              setTimeout(() => {
+                document.querySelectorAll(`#li_${value}`)[0].classList.remove('v-enter-active')
+              }, 500)
+            }
           }
-          if (parentNodeId === 'B' && selectIndex !== 1) {
-            dataFix(selectIndex, 1)
-          }
-          if (parentNodeId === 'C' && selectIndex !== 2) {
-            dataFix(selectIndex, 2)
-          }
-          if (parentNodeId === 'D' && selectIndex !== 3) {
-            dataFix(selectIndex, 3)
-          }
-          if (parentNodeId === 'E' && selectIndex !== 4) {
-            dataFix(selectIndex, 4)
-          }
-          if (parentNodeId === 'F' && selectIndex !== 5) {
-            dataFix(selectIndex, 5)
+          if (id2index[parentNodeId] !== selectIndex) {
+            otherULdataFix(selectIndex, id2index[parentNodeId])
+          } else {
+            sameUlDataFix(parentNodeId)
           }
         }
       }
