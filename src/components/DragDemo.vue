@@ -172,7 +172,7 @@ export default {
           }
 
           const otherULdataFix = (index, i) => {
-            // 移到的UL的id
+            // 移动到的UL的id
             const ele = this.dragList[selectIndex].id
             let replaceIndex = -1
             const pNode = document.querySelectorAll(`#${ele}`)[0]
@@ -182,9 +182,6 @@ export default {
               if (targetY > offsetY) {
                 replaceIndex = index
               }
-              if (targetY < 110) {
-                replaceIndex = -1
-              }
             })
             this.dragList[index].dataList.splice(replaceIndex + 1, 0, {
               value
@@ -192,7 +189,7 @@ export default {
             this.dragList[i].dataList = this.dragList[i].dataList.filter(item => item.value !== value)
           }
 
-          const sameUlDataFix = (ele) => {
+          const sameULDataFix = ele => {
             let replaceIndex = 0
             const pNode = document.querySelectorAll(`#${ele}`)[0]
             document.querySelectorAll(`#${ele} span li`).forEach((item, index) => {
@@ -223,7 +220,7 @@ export default {
           if (id2index[parentNodeId] !== selectIndex) {
             otherULdataFix(selectIndex, id2index[parentNodeId])
           } else {
-            sameUlDataFix(parentNodeId)
+            sameULDataFix(parentNodeId)
           }
         }
       }
