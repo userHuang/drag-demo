@@ -1,13 +1,11 @@
 <template>
   <div class="drag-page container">
-    <transition-group>
     <ul @mousedown="mousedown(drag, index, $event)" :id="drag.id" v-for="(drag, index) in dragList" :key='drag.id'>
       <transition-group>
         <li :id="`li_${item.value}`" class="drag-el" :curli="i" v-for="(item, i) in drag.dataList" :key="`${drag.id}_${item.value}`">{{item.value}}</li>
       </transition-group>
       <li :style="dragStyle" v-if="parentNodeId == drag.id">{{value}}</li>
     </ul>
-    </transition-group>
   </div>
 </template>
 
@@ -54,45 +52,29 @@
   }
 </style>
 
-<script type="text/ecmascript-6">
-const id2index = {
-  'A': 0,
-  'B': 1,
-  'C': 2,
-  'D': 3,
-  'E': 4,
-  'F': 5
-}
+<script>
 export default {
-  name: 'Drag',
+  name: 'DragDemo',
   data () {
     return {
       permitDrag: false, // 是否允许移动标识
-
-      dragList: [{
-        id: 'A',
-        dataList: [{
-          value: '1'
-        }, {
-          value: '2'
-        }, {
-          value: '3'
-        }, {
-          value: '4'
-        }, {
-          value: '5'
-        }]
-      }, {
-        id: 'B',
-        dataList: []
-      }, {
-        id: 'C',
-        dataList: []
-      }],
-
+      id2index: {},
       dragStyle: {},
       parentNodeId: '',
       value: ''
+    }
+  },
+  props: {
+    dragList: {
+      style: Array,
+      default: () => []
+    }
+  },
+  created () {
+    if (this.dragList) {
+      this.dragList.forEach((item, index) => {
+        this.id2index[item.id] = index
+      })
     }
   },
   methods: {
@@ -217,8 +199,8 @@ export default {
               }, 500)
             }
           }
-          if (id2index[parentNodeId] !== selectIndex) {
-            otherULdataFix(selectIndex, id2index[parentNodeId])
+          if (this.id2index[parentNodeId] !== selectIndex) {
+            otherULdataFix(selectIndex, this.id2index[parentNodeId])
           } else {
             sameULDataFix(parentNodeId)
           }
