@@ -1,9 +1,10 @@
 {
   "name": "drag-demo",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "drag demo",
   "author": "userHuang <1210530036@qq.com>",
-  "private": true,
+  "private": false,
+  "main": "dist/drag.min.js",
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
